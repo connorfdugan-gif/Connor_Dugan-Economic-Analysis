@@ -5,8 +5,6 @@ THIS IS THE MAIN FILE YOU CUSTOMIZE.
 
 Beginner note:
 Most project changes should happen here, not in app.py.
-
-Search for the words FILL IN below and replace the placeholder text.
 """
 
 # -----------------------------------------------------------------------------
@@ -14,26 +12,48 @@ Search for the words FILL IN below and replace the placeholder text.
 # -----------------------------------------------------------------------------
 # These values control the title and the top text in the dashboard.
 
-PROJECT_TITLE = "FILL IN: Your Dashboard Title"
-PROJECT_SUBTITLE = "FILL IN: One sentence describing your topic"
-PROJECT_TAGLINE = "FILL IN: A short polished tagline for your project"
+PROJECT_TITLE = "Driving Demand"
+PROJECT_SUBTITLE = "Predicting U.S. Light Vehicle Sales Through Consumer Financial Conditions and Energy Costs"
+PROJECT_TAGLINE = "What moves metal off the lot — wages, income, or gas prices?"
 
 # Main research question shown near the top of the dashboard
 RESEARCH_QUESTION = """
-FILL IN:
-Write 1 to 3 sentences explaining your research question.
-Example:
-How has inflation changed over time, and how is it related to unemployment,
-interest rates, and recession periods?
+To what extent can U.S. light vehicle sales be predicted by consumer financial conditions 
+and energy costs? Additionally, which factor among wage growth, real disposable income, 
+and fuel prices has the strongest predictive power across different economic regimes?
 """
 
 EXECUTIVE_SUMMARY = (
-    "FILL IN: Write a short summary of what your dashboard studies. "
-    "This should sound polished and professional."
+    "Automobile purchases represent one of the largest discretionary expenditures for "
+    "American households, making light vehicle sales a powerful barometer of consumer "
+    "economic health. Yet the decision to buy a car is not driven by any single factor — "
+    "it emerges from a complex interplay of household income dynamics and everyday cost "
+    "pressures. This project investigates whether U.S. total light vehicle sales can be "
+    "effectively predicted using three macroeconomic indicators sourced from the Federal "
+    "Reserve Economic Data (FRED) database: average hourly earnings, real disposable "
+    "personal income, and regular gasoline prices. Using machine learning techniques "
+    "applied to historical monthly data, the analysis pursues two objectives. First, it "
+    "evaluates the predictive accuracy of models trained on these features, comparing "
+    "approaches to identify which best captures the nonlinear and potentially "
+    "regime-dependent relationships between the predictors and vehicle sales. Second, it "
+    "leverages feature importance analysis to determine which economic forces exert the "
+    "greatest influence on auto demand — and whether that hierarchy shifts between periods "
+    "of expansion and contraction. The findings aim to offer insight not only into the "
+    "mechanics of consumer durable goods demand, but also into the broader question of how "
+    "households weigh competing financial signals when making major purchasing decisions."
 )
 
 DATASET_DESCRIPTION = (
-    "FILL IN: Explain what your selected FRED series represent and why you chose them."
+    "This project uses four time series from the Federal Reserve Economic Data (FRED) "
+    "database. The target variable is Total Vehicle Sales (TOTALSA), reported as a "
+    "seasonally adjusted annual rate in millions of units. The three predictor variables "
+    "are Average Hourly Earnings of All Private Employees (CES0500000003), which tracks "
+    "nominal wage trends; Real Disposable Personal Income (DSPIC96), which measures "
+    "inflation-adjusted income available to households after taxes; and U.S. Regular All "
+    "Formulations Retail Gasoline Prices (GASREGW), which captures fuel cost pressure on "
+    "consumers. These series were chosen because they represent distinct channels through "
+    "which economic conditions influence big-ticket purchasing decisions — what people earn, "
+    "what they can actually spend, and what they pay to drive."
 )
 
 # -----------------------------------------------------------------------------
@@ -46,10 +66,10 @@ DATASET_DESCRIPTION = (
 # Replace the example series below with your own topic.
 
 SERIES = {
-    "FILL_IN_SERIES_ID_1": "FILL IN: Nice label for your main target series",
-    "FILL_IN_SERIES_ID_2": "FILL IN: Nice label for supporting variable 1",
-    "FILL_IN_SERIES_ID_3": "FILL IN: Nice label for supporting variable 2",
-    "FILL_IN_SERIES_ID_4": "FILL IN: Nice label for supporting variable 3",
+    "TOTALSA": "Total Vehicle Sales",
+    "CES0500000003": "Average Hourly Earnings",
+    "GASREGW": "Gas Prices",
+    "DSPIC96": "Real Disposable Personal Income",
 }
 
 # Optional recession indicator used for gray shaded regions on charts
@@ -58,14 +78,14 @@ RECESSION_SERIES_LABEL = "U.S. Recession Indicator"
 
 # Start date for pulling data from FRED
 # Change this if your series starts later and you want to avoid many missing values
-START_DATE = "FILL IN: YYYY-MM-DD"
+START_DATE = "2006-04-01"
 
 # Choose the final dashboard frequency
 # Use:
 # "A" for annual
 # "Q" for quarterly
 # "M" for monthly
-TARGET_FREQUENCY = "FILL IN: A, Q, or M"
+TARGET_FREQUENCY = "M"
 
 # If True, app.py will show debug tables for missing values and column names
 # Set this to False before final presentation
@@ -80,10 +100,10 @@ ADD_ZERO_LINE_TO_MAIN_CHART = True
 # -----------------------------------------------------------------------------
 # These labels control the 4 metric cards at the top of the dashboard.
 
-PRIMARY_METRIC_LABEL = "FILL IN: Label for latest value"
-SECONDARY_METRIC_LABEL = "FILL IN: Label for average value"
-LOW_METRIC_LABEL = "FILL IN: Label for minimum"
-HIGH_METRIC_LABEL = "FILL IN: Label for maximum"
+PRIMARY_METRIC_LABEL = "Latest Monthly Vehicle Sales (Millions)"
+SECONDARY_METRIC_LABEL = "Average Monthly Vehicle Sales (Millions)"
+LOW_METRIC_LABEL = "Lowest Monthly Vehicle Sales (Millions)"
+HIGH_METRIC_LABEL = "Highest Monthly Vehicle Sales (Millions)"
 
 # -----------------------------------------------------------------------------
 # ANALYSIS TARGET AND MODEL FEATURES
@@ -91,12 +111,12 @@ HIGH_METRIC_LABEL = "FILL IN: Label for maximum"
 # TARGET_VARIABLE must match one of the keys inside SERIES.
 # MODEL_FEATURES should be a list of supporting variables that help explain the target.
 
-TARGET_VARIABLE = "FILL_IN_SERIES_ID_1"
+TARGET_VARIABLE = "TOTALSA"
 
 MODEL_FEATURES = [
-    "FILL_IN_SERIES_ID_2",
-    "FILL_IN_SERIES_ID_3",
-    "FILL_IN_SERIES_ID_4",
+    "CES0500000003",
+    "DSPIC96",
+    "GASREGW",
 ]
 
 # -----------------------------------------------------------------------------
@@ -112,20 +132,42 @@ RANDOM_STATE = 42
 # These appear in the dashboard as polished explanation text.
 
 INTRO_PARAGRAPH = (
-    "FILL IN: Write a beginner-friendly introduction to the topic and why it matters."
+    "Every month, millions of Americans make one of the biggest purchases of their "
+    "lives: a new vehicle. Total U.S. vehicle sales reflect far more than consumer "
+    "preference — they signal how confident households feel about their financial "
+    "situation. This dashboard explores whether three key economic indicators — average "
+    "hourly earnings, real disposable personal income, and regular gasoline prices — can "
+    "help explain and predict shifts in national vehicle sales. Understanding these "
+    "relationships matters because auto sales ripple through the entire economy, from "
+    "manufacturing and logistics to lending and insurance."
 )
 
 METHODS_PARAGRAPH = (
-    "FILL IN: Explain how the dashboard collects FRED data, aligns time series, "
-    "visualizes trends, and uses a baseline linear regression model."
+    "All data is sourced from the Federal Reserve Economic Data (FRED) database, which "
+    "provides publicly available, regularly updated macroeconomic time series. The four "
+    "series — Total Vehicle Sales (TOTALSA), Average Hourly Earnings (CES0500000003), "
+    "Real Disposable Personal Income (DSPIC96), and Regular Gasoline Prices (GASREGW) — "
+    "are aligned to a common monthly frequency and merged by date. After handling missing "
+    "values and ensuring consistent time coverage, the dashboard visualizes each variable's "
+    "trend over time and its correlation with vehicle sales. A baseline linear regression "
+    "model is then trained on the three predictor variables to forecast vehicle sales, with "
+    "performance evaluated using standard metrics like R-squared and mean absolute error."
 )
 
 FINDINGS_PARAGRAPH = (
-    "FILL IN: Replace this with your final findings after analysis."
+    "Findings will be updated here once the full analysis is complete. Preliminary "
+    "exploration suggests that the relationship between these predictors and vehicle "
+    "sales is not purely linear — external shocks like the 2008 financial crisis and "
+    "the COVID-19 pandemic introduce structural breaks that challenge simple models. "
+    "Feature importance and residual analysis will reveal which predictor carries the "
+    "most weight and where the model struggles most."
 )
 
 TEAM_NOTES = (
-    "FILL IN: Add a short demo-day note about what the audience should notice."
+    "As you explore the dashboard, pay attention to how vehicle sales respond differently "
+    "to each predictor during economic downturns versus expansions. Notice that gas prices "
+    "and earnings don't always move sales in the direction you might expect — context "
+    "matters, and that's exactly what makes this prediction problem interesting."
 )
 
 # -----------------------------------------------------------------------------
@@ -155,20 +197,31 @@ SECTION_TITLES = {
 
 CHART_GROUPS = {
     "group_1": {
-        "title": "FILL IN: Comparison chart 1 title",
+        "title": "Earnings & Income vs. Vehicle Sales",
         "description": (
-            "FILL IN: Explain what this chart compares and why it matters."
+            "This chart overlays average hourly earnings and real disposable "
+            "personal income against vehicle sales over time. Both measures "
+            "capture household purchasing power, but from different angles — "
+            "earnings reflect what workers take home per hour, while disposable "
+            "income accounts for taxes, transfers, and inflation. Watching how "
+            "these diverge or converge with sales reveals whether rising wages "
+            "actually translate into big-ticket purchases."
         ),
         "chart_type": "line",
-        "series_ids": ["FILL_IN_SERIES_ID_2", "FILL_IN_SERIES_ID_3"],
+        "series_ids": ["CES0500000003", "DSPIC96"],
     },
     "group_2": {
-        "title": "FILL IN: Comparison chart 2 title",
+        "title": "Gas Prices vs. Vehicle Sales",
         "description": (
-            "FILL IN: Explain what this second comparison chart shows."
+            "This chart tracks regular gasoline prices alongside vehicle sales. "
+            "Fuel costs act as both a direct expense and a psychological signal "
+            "for consumers weighing a new vehicle purchase. Spikes in gas prices "
+            "can suppress demand outright or shift buyers toward smaller, more "
+            "fuel-efficient models — either way, the relationship is rarely as "
+            "simple as 'gas goes up, sales go down.'"
         ),
         "chart_type": "line",
-        "series_ids": ["FILL_IN_SERIES_ID_4"],
+        "series_ids": ["GASREGW"],
     },
 }
 
@@ -178,9 +231,9 @@ CHART_GROUPS = {
 # Helpful for documentation, your README, or future expanders/tooltips.
 
 SERIES_DESCRIPTIONS = {
-    "FILL_IN_SERIES_ID_1": "FILL IN: Description of target series",
-    "FILL_IN_SERIES_ID_2": "FILL IN: Description of supporting series 1",
-    "FILL_IN_SERIES_ID_3": "FILL IN: Description of supporting series 2",
-    "FILL_IN_SERIES_ID_4": "FILL IN: Description of supporting series 3",
+    "TOTALSA": "Total vehicle sales in millions of units, seasonally adjusted annual rate. This is the target variable the model aims to predict.",
+    "CES0500000003": "Average hourly earnings of all private employees in dollars, reflecting wage trends and household purchasing power.",
+    "DSPIC96": "Real disposable personal income in billions of chained 2017 dollars, measuring inflation-adjusted income available after taxes.",
+    "GASREGW": "U.S. regular all-formulations retail gasoline prices in dollars per gallon, capturing everyday energy cost pressure on consumers.",
     "USREC": "U.S. recession indicator used for chart shading.",
 }
