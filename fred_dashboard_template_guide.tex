@@ -1,0 +1,211 @@
+
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{parskip}
+
+\definecolor{navy}{RGB}{31,78,121}
+\definecolor{lightgray}{RGB}{245,247,250}
+\definecolor{codegray}{RGB}{70,70,70}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=navy,
+  urlcolor=navy
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{FRED Dashboard Template Guide}
+\rhead{\thepage}
+
+\titleformat{\section}{\large\bfseries\color{navy}}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{navy}}{\thesubsection}{0.5em}{}
+
+\lstset{
+  basicstyle=\ttfamily\small\color{codegray},
+  backgroundcolor=\color{lightgray},
+  frame=single,
+  breaklines=true,
+  columns=fullflexible
+}
+
+\title{\textbf{Beginner-Friendly FRED Dashboard Template Guide}}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Purpose of this template}
+This template follows the same overall format as the example dashboard project you uploaded.
+It is designed so that a beginner can duplicate the structure, fill in a new dataset topic,
+and still keep a professional modular dashboard architecture.
+
+\section{Folder structure}
+\begin{lstlisting}
+project/
+├── app.py
+├── config.py
+├── narrative_blocks.py
+├── requirements.txt
+├── .env.example
+├── README.md
+├── .streamlit/
+│   └── config.toml
+└── src/
+    ├── data_loader.py
+    ├── analysis.py
+    └── visuals.py
+\end{lstlisting}
+
+\section{What each file means}
+
+\subsection{app.py}
+This is the main Streamlit dashboard file. It controls:
+\begin{itemize}[leftmargin=1.5em]
+  \item page layout
+  \item sidebar controls
+  \item top metric cards
+  \item charts
+  \item model output
+  \item dataset download button
+\end{itemize}
+Most beginners should avoid changing app.py unless they want to add a brand new section.
+
+\subsection{config.py}
+This is the main customization file. For most projects, this is the only file that needs to be edited.
+Replace every placeholder that says \texttt{FILL IN}. The most important parts are:
+\begin{itemize}[leftmargin=1.5em]
+  \item project title
+  \item research question
+  \item FRED series dictionary
+  \item target variable
+  \item model features
+  \item chart groups
+  \item start date
+  \item target frequency
+\end{itemize}
+
+\subsection{src/data_loader.py}
+This file downloads data from FRED and aligns mixed-frequency time series.
+If your charts look blank, this is one of the first places to inspect.
+
+\subsection{src/analysis.py}
+This file handles summary statistics and the baseline linear regression model.
+This project uses linear regression because the target is numeric.
+
+\subsection{src/visuals.py}
+This file creates the charts. Keeping chart code here makes app.py much cleaner.
+
+\subsection{narrative\_blocks.py}
+This file contains optional text helper functions. It is useful if you want reusable story text.
+
+\subsection{requirements.txt}
+This file lists the Python packages that must be installed.
+
+\subsection{.env.example}
+This shows the format for your private FRED API key. Copy it to a file named \texttt{.env}.
+
+\section{How to customize the dashboard}
+
+\subsection{Step 1: choose your FRED topic}
+Pick one main variable and several supporting variables. Example topics:
+\begin{itemize}[leftmargin=1.5em]
+  \item unemployment
+  \item inflation
+  \item housing
+  \item interest rates
+  \item GDP and recession
+  \item federal deficit
+\end{itemize}
+
+\subsection{Step 2: edit config.py}
+In \texttt{config.py}, replace:
+\begin{itemize}[leftmargin=1.5em]
+  \item \texttt{PROJECT\_TITLE}
+  \item \texttt{RESEARCH\_QUESTION}
+  \item \texttt{SERIES}
+  \item \texttt{TARGET\_VARIABLE}
+  \item \texttt{MODEL\_FEATURES}
+  \item \texttt{CHART\_GROUPS}
+  \item \texttt{START\_DATE}
+  \item \texttt{TARGET\_FREQUENCY}
+\end{itemize}
+
+\subsection{Step 3: create your .env file}
+Create a file named \texttt{.env} in the project root and add:
+\begin{lstlisting}
+FRED_API_KEY=your_actual_key_here
+\end{lstlisting}
+
+\subsection{Step 4: install dependencies}
+Mac or Linux:
+\begin{lstlisting}
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+\end{lstlisting}
+
+Windows PowerShell:
+\begin{lstlisting}
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+\end{lstlisting}
+
+\subsection{Step 5: run the dashboard}
+\begin{lstlisting}
+streamlit run app.py
+\end{lstlisting}
+
+\section{How the files work together}
+The dashboard runs in this order:
+\begin{enumerate}[leftmargin=1.5em]
+  \item app.py reads settings from config.py
+  \item app.py calls src/data\_loader.py to fetch and merge data
+  \item app.py renames raw FRED IDs into nice display names
+  \item app.py calls src/visuals.py to draw charts
+  \item app.py calls src/analysis.py to compute metrics and fit the model
+  \item the dashboard renders in Streamlit
+\end{enumerate}
+
+\section{Where the machine learning model is}
+The baseline model is inside \texttt{src/analysis.py}. It uses linear regression:
+\begin{lstlisting}
+model = LinearRegression()
+model.fit(X, y)
+\end{lstlisting}
+This is not logistic regression. Logistic regression is used for classification.
+Linear regression is appropriate here because the target variable is numeric.
+
+\section{Common beginner mistakes}
+\begin{itemize}[leftmargin=1.5em]
+  \item using fake FRED IDs instead of real ones
+  \item forgetting to create the .env file
+  \item making TARGET\_VARIABLE different from the keys in SERIES
+  \item choosing a start date that is too early for one of the series
+  \item mixing annual and monthly data without understanding target frequency
+  \item leaving debug tables turned on in the final presentation
+\end{itemize}
+
+\section{Final pre-submission checklist}
+\begin{itemize}[leftmargin=1.5em]
+  \item all FILL IN placeholders replaced
+  \item .env file created
+  \item streamlit app runs without crashing
+  \item charts display real lines
+  \item regression table appears
+  \item debug tables turned off
+  \item findings paragraph updated with your actual conclusions
+\end{itemize}
+
+\end{document}
