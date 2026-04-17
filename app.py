@@ -18,7 +18,7 @@ from config import *
 
 # Import helper functions from the src folder
 from src.data_loader import load_fred_data
-from src.analysis import build_regression_table, compute_summary_metrics
+from src.analysis import build_regression_table, compute_summary_metrics, build_regime_comparison
 from src.visuals import (
     plot_time_series,
     plot_multi_line_chart,
@@ -281,22 +281,90 @@ else:
 st.markdown(f"## {SECTION_TITLES['modeling']}")
 st.markdown(METHODS_PARAGRAPH)
 
-coef_df, r2 = build_regression_table(
+coef_df, metrics = build_regression_table(
     df=filtered_df,
     target_col=target_label,
-    feature_cols=feature_labels
+    feature_cols=feature_labels,
+    test_size=TEST_SIZE,
+    random_state=RANDOM_STATE,
 )
 
 if coef_df is not None:
     left, right = st.columns([2, 1])
 
     with left:
-        st.dataframe(coef_df, use_container_width=True)
+        st.markdown("**Feature importance (sorted by magnitude of standardized coefficient)**")
+        st.dataframe(coef_df, use_container_width=True, hide_index=True)
+        st.caption(
+            "Standardized coefficients let you compare predictors on equal footing. "
+            "The feature with the largest absolute standardized coefficient has the "
+            "strongest linear relationship with vehicle sales, holding the others constant."
+        )
 
     with right:
-        st.metric("Model R²", f"{r2:.3f}")
+        st.metric("Test R²", f"{metrics['test_r2']:.3f}")
+        st.metric("Test MAE", f"{metrics['test_mae']:.3f}",
+                  help="Mean absolute error on held-out data, in millions of vehicles.")
+        st.metric("Train R²", f"{metrics['train_r2']:.3f}")
+        st.caption(f"Train: {metrics['n_train']} obs • Test: {metrics['n_test']} obs")
 else:
     st.info("Not enough complete observations to fit the baseline model.")
+
+
+# -----------------------------------------------------------------------------
+# REGIME ANALYSIS
+# -----------------------------------------------------------------------------
+# Splits data into positive vs. negative YoY vehicle sales growth and fits
+# the same model separately on each regime. If feature importance shifts
+# between regimes, that's evidence for the executive summary's claim.
+
+st.markdown("## Regime Analysis: Does Feature Importance Shift?")
+st.markdown(
+    "The same linear regression is fit separately on months when vehicle "
+    "sales were growing year-over-year versus months when they were "
+    "contracting. If the standardized coefficient ranking reshuffles between "
+    "regimes, the relationship between predictors and vehicle sales is "
+    "regime-dependent — meaning no single model tells the whole story."
+)
+
+regime_results = build_regime_comparison(
+    df=filtered_df,
+    target_col=target_label,
+    feature_cols=feature_labels,
+    periods=12,
+    test_size=TEST_SIZE,
+    random_state=RANDOM_STATE,
+)
+
+regime_cols = st.columns(2)
+
+regime_labels = [
+    ("positive", "Expansion (Positive YoY Growth)", regime_cols[0]),
+    ("negative", "Contraction (Negative YoY Growth)", regime_cols[1]),
+]
+
+for key, label, col in regime_labels:
+    with col:
+        st.markdown(f"### {label}")
+        result = regime_results[key]
+        if result["coef_df"] is not None:
+            st.dataframe(result["coef_df"], use_container_width=True, hide_index=True)
+            sub1, sub2 = st.columns(2)
+            sub1.metric("Test R²", f"{result['metrics']['test_r2']:.3f}")
+            sub2.metric("Test MAE", f"{result['metrics']['test_mae']:.3f}")
+            st.caption(f"{result['n_obs']} observations in this regime")
+        else:
+            st.info(
+                f"Not enough observations in the {label.lower()} regime "
+                "to fit a model on the selected date range."
+            )
+
+st.caption(
+    "Compare the top feature (largest absolute standardized coefficient) in "
+    "each column. If they differ — or if the sign flips — the predictors "
+    "matter differently depending on whether the auto market is expanding "
+    "or contracting."
+)
 
 # -----------------------------------------------------------------------------
 # CONCLUSION

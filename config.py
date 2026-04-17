@@ -155,21 +155,41 @@ METHODS_PARAGRAPH = (
 )
 
 FINDINGS_PARAGRAPH = (
-    "Findings will be updated here once the full analysis is complete. Preliminary "
-    "exploration suggests that the relationship between these predictors and vehicle "
-    "sales is not purely linear — external shocks like the 2008 financial crisis and "
-    "the COVID-19 pandemic introduce structural breaks that challenge simple models. "
-    "Feature importance and residual analysis will reveal which predictor carries the "
-    "most weight and where the model struggles most."
+    "The baseline linear regression achieves a test R² of just 0.076 and a mean "
+    "absolute error of 1.63 million vehicles on held-out data — weak predictive "
+    "performance that empirically confirms the concern raised in the executive "
+    "summary: consumer auto demand is not well-described by a simple linear "
+    "combination of these three predictors. Real disposable personal income "
+    "emerges as the dominant signal in the pooled model (standardized coefficient "
+    "of +2.06), while average hourly earnings carries a large negative "
+    "standardized coefficient of -1.38. That negative sign should not be read "
+    "as a genuine inverse relationship — wages and disposable income are highly "
+    "correlated, so when both enter the regression together, the model tends to "
+    "split a single underlying effect into opposing coefficients. Gas prices, by "
+    "contrast, show essentially no independent effect in the pooled model "
+    "(standardized coefficient of -0.03). The regime analysis provides the "
+    "sharpest evidence that a single model cannot tell the whole story. During "
+    "expansion months (positive year-over-year sales growth, n=132), the model "
+    "achieves a modest test R² of 0.267. During contraction months (n=97), test "
+    "R² falls to -0.07 — worse than simply predicting the mean — and the raw "
+    "coefficient on gas prices flips sign from strongly negative during "
+    "expansions to slightly positive during contractions. Taken together, these "
+    "results suggest that macroeconomic fundamentals offer some linear signal "
+    "when the auto market is growing, but the relationship breaks down during "
+    "downturns, where structural shocks like the 2008 financial crisis and "
+    "COVID-19 introduce nonlinearities that linear regression cannot "
+    "accommodate. A natural next step would be to test tree-based or "
+    "regime-switching models that can handle these structural breaks directly."
 )
 
 TEAM_NOTES = (
-    "As you explore the dashboard, pay attention to how vehicle sales respond differently "
-    "to each predictor during economic downturns versus expansions. Notice that gas prices "
-    "and earnings don't always move sales in the direction you might expect — context "
-    "matters, and that's exactly what makes this prediction problem interesting."
+    "The most instructive part of this project is what the model gets wrong. "
+    "The linear regression works passably during expansions but fails outright "
+    "during contractions, and the sign flip on gas prices between regimes is a "
+    "clear signal that the underlying relationship is not stable. For a "
+    "presentation, the regime comparison is the key slide — it shows that "
+    "choosing the right model matters as much as choosing the right features."
 )
-
 # -----------------------------------------------------------------------------
 # SECTION TITLES
 # -----------------------------------------------------------------------------
